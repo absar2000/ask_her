@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Valentine 💖</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #ffd6e7, #ffeef6);
+      font-family: system-ui, sans-serif;
+      overflow: hidden;
+    }
+
+    .card {
+      background: #ffffffcc;
+      padding: 28px 24px;
+      border-radius: 22px;
+      text-align: center;
+      width: min(720px, 92vw);
+      box-shadow: 0 20px 60px rgba(0,0,0,.15);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      font-size: clamp(26px, 4vw, 44px);
+      margin-bottom: 10px;
+    }
+
+    .message {
+      font-size: 14px;
+      opacity: .8;
+      min-height: 20px;
+      margin-bottom: 12px;
+    }
+
+    .zone {
+      position: relative;
+      height: 150px;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 16px 26px;
+      font-size: 18px;
+      font-weight: 800;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0,0,0,.14);
+      transition: transform .15s ease, background .15s ease;
+    }
+
+    #yes {
+      left: 20%;
+      background: #ff3b7a;
+      color: white;
+    }
+
+    #no {
+      left: 60%;
+      background: #e5e7eb;
+      color: #111;
+    }
+
+    .result {
+      display: none;
+      animation: pop .4s ease;
+    }
+
+    .result h2 {
+      font-size: clamp(28px, 4vw, 46px);
+    }
+
+    .kiss {
+      width: min(380px, 90vw);
+      margin-top: 10px;
+      border-radius: 18px;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+<main class="card">
+  <h1>janni will you be my valentine? 💘</h1>
+  <div class="message" id="msg"></div>
+
+  <div class="zone" id="zone">
+    <button id="yes">Yes</button>
+    <button id="no">No</button>
+  </div>
+
+  <div class="result" id="result">
+    <h2>YAYYY 🥰💋</h2>
+    <img
+      class="kiss"
+      src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"
+      alt="boy kissing teddy girl"
+    />
+  </div>
+</main>
+
+<script>
+  const zone = document.getElementById("zone");
+  const yes = document.getElementById("yes");
+  const no = document.getElementById("no");
+  const msg = document.getElementById("msg");
+  const result = document.getElementById("result");
+
+  const messages = [
+    "hey think one more time pooki 🥺",
+    "are you really sure? 😭",
+    "don’t break my heart 💔",
+    "last chance 😈"
+  ];
+
+  let msgIndex = 0;
+  let yesScale = 1;
+
+  function growYes() {
+    yesScale = Math.min(2.4, yesScale + 0.15);
+    yes.style.transform = `translateY(-50%) scale(${yesScale})`;
+  }
+
+  function moveNo(x, y) {
+    const z = zone.getBoundingClientRect();
+    const b = no.getBoundingClientRect();
+
+    let dx = (b.left + b.width / 2) - x;
+    let dy = (b.top + b.height / 2) - y;
+    let mag = Math.hypot(dx, dy) || 1;
+    dx /= mag;
+    dy /= mag;
+
+    let left = (b.left - z.left) + dx * 150;
+    let top  = (b.top - z.top) + dy * 150;
+
+    left = Math.max(0, Math.min(left, z.width - b.width));
+    top  = Math.max(0, Math.min(top, z.height - b.height));
+
+    no.style.left = left + "px";
+    no.style.top  = top + "px";
+
+    msg.textContent = messages[msgIndex % messages.length];
+    msgIndex++;
+    growYes();
+  }
+
+  zone.addEventListener("pointermove", e => {
+    const b = no.getBoundingClientRect();
+    const d = Math.hypot(
+      (b.left + b.width / 2) - e.clientX,
+      (b.top + b.height / 2) - e.clientY
+    );
+    if (d < 130) moveNo(e.clientX, e.clientY);
+  });
+
+  yes.addEventListener("click", () => {
+    zone.style.display = "none";
+    msg.style.display = "none";
+    result.style.display = "block";
+
+    confetti({
+      particleCount: 200,
+      spread: 120,
+      origin: { y: 0.6 }
+    });
+  });
+</script>
+
+</body>
+</html>
